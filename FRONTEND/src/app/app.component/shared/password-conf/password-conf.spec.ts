@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { PasswordConf } from './password-conf';
+import {PasswordConf} from './password-conf';
 
 describe('PasswordConf', () => {
   let component: PasswordConf;

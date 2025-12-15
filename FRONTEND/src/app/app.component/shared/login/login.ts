@@ -1,28 +1,27 @@
-import { Component, OnInit } from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService, User } from '../services/auth.service';
-import { passwordConf } from '../password-conf/password-conf';
+
+import { AuthService } from '../services/auth.service';
+import { User } from '../services/model/user';
 
 @Component({
-  // ⚠️ Modification du sélecteur pour suivre la convention (si nécessaire)
-  selector: 'app-login', 
+  selector: 'app-login',
   standalone: true,
-  imports: [
-    CommonModule, 
-    FormsModule,
-    passwordConf
-  ],
-  templateUrl: './login.html', 
+  imports: [CommonModule, FormsModule],
+  templateUrl: './login.html',
   styleUrls: ['./login.scss']
 })
+export class Login implements OnInit {
 
-export class Login implements OnInit { 
-  
-  isDetailedForm = false; 
+  isDetailedForm = false;
+
+  // Champs du formulaire simple
   voteNumber = '';
   voterName = '';
+
+  // Champs du formulaire détaillé
   voterFirstName = '';
   voterBirthDate = '';
   voterFatherName = '';
@@ -30,98 +29,110 @@ export class Login implements OnInit {
 
   errorMessage: string | null = null;
   isLoading = false;
-  showPasswordSetupModal = false;
-  verifiedUser: User | null = null; 
 
   constructor(
-    private authService: AuthService, 
-    private router: Router
+    private authService: AuthService,
+    private router: Router,
+    private cd: ChangeDetectorRef // Injection pour forcer la détection de changements
   ) {}
 
+
   ngOnInit(): void {
+    // Vérifier si l'utilisateur est déjà connecté
     this.authService.currentUser$.subscribe(user => {
-      // Si l'utilisateur est déjà connecté ET a son mot de passe 2FA, on le redirige immédiatement.
-      if (user && user.isTwoFactorSetup) {
-        this.router.navigate(['/vote']); 
+      if (user) {
+        this.router.navigate(['/vote']);
       }
     });
   }
-  
-  toggleForm(useDetailed: boolean) {
+
+  toggleForm(useDetailed: boolean): void {
     this.isDetailedForm = useDetailed;
     this.errorMessage = null;
+    this.clearForm();
   }
 
-  // Fonction de connexion unifiée
-  authenticate() {
+  clearForm(): void {
+    this.voteNumber = '';
+    this.voterName = '';
+    this.voterFirstName = '';
+    this.voterBirthDate = '';
+    this.voterFatherName = '';
+    this.voterMotherName = '';
+  }
+
+  async authenticate(): Promise<void> {
+    // Réinitialiser l'erreur
     this.errorMessage = null;
-    this.isLoading = true;
-    
-    let authenticationData: any; // Objet qui sera envoyé à authService.authenticate()
 
-    if (!this.isDetailedForm) {
-      // Logique pour le formulaire simple (Nom et Numéro de Vote)
-      if (!this.voterName || !this.voteNumber) {
-        this.errorMessage = 'Veuillez saisir votre Nom et Numéro de Vote.';
-        this.isLoading = false;
-        return;
-      }
-      authenticationData = {
-        name: this.voterName,
-        voteNumber: this.voteNumber 
-      };
-      
-    } else {
-      // Logique pour le formulaire détaillé (Infos Personnelles)
-      if (!this.voterName || !this.voterFirstName || !this.voterBirthDate) {
-        this.errorMessage = 'Veuillez remplir au moins le Nom, Prénom et Date de Naissance.';
-        this.isLoading = false;
-        return;
-      }
-      authenticationData = {
-        name: this.voterName,
-        firstName: this.voterFirstName,
-        birthDate: this.voterBirthDate,
-        fatherName: this.voterFatherName,
-        motherName: this.voterMotherName
-      };
+    // Validation simple du formulaire
+    if (!this.voterName || this.voterName.trim() === '') {
+      this.errorMessage = 'Le nom de famille est obligatoire.';
+      return;
     }
-    
-    
-    this.authService.authenticate(authenticationData).subscribe({
-      next: (user) => {
-        this.isLoading = false;
-        if (user) {
-          this.verifiedUser = user;
-          
-          if (user.isTwoFactorSetup) {
-            // Utilisateur déjà configuré -> Le rediriger pour voter
-            this.router.navigate(['/vote']); 
-          } else {
-            // Première connexion -> Afficher le popup de configuration du mot de passe
-            this.showPasswordSetupModal = true;
-          }
-        } else {
-          this.errorMessage = 'Identifiants non valides.';
-        }
-      },
-      error: (err) => {
-        this.isLoading = false;
-        this.errorMessage = 'Erreur de connexion au serveur.';
-        console.error(err);
+
+    if (!this.isDetailedForm && (!this.voteNumber || this.voteNumber.trim() === '')) {
+      this.errorMessage = 'Le numéro de vote est obligatoire.';
+      return;
+    }
+
+    // Démarrer le chargement
+    this.isLoading = true;
+    this.cd.detectChanges(); // forcer l'affichage du spinner immédiatement
+
+    try {
+      // Appeler le service d'authentification
+      const user = await this.authService.authenticate(this.voteNumber, this.voterName);
+
+      if (user) {
+        // Succès : rediriger vers la page de vote
+        this.router.navigate(['/home']);
+      } else {
+        // Aucun utilisateur retourné
+        this.errorMessage = 'Identifiants incorrects. Veuillez vérifier vos informations.';
       }
-    });
+
+    } catch (error: any) {
+      // Gestion robuste des messages d'erreur
+      if (error?.error) {
+        if (typeof error.error === 'string') {
+          this.errorMessage = error.error;
+        } else if (error.error.message) {
+          this.errorMessage = error.error.message;
+        } else if (error.error.error) {
+          this.errorMessage = error.error.error;
+        } else {
+          this.errorMessage = `Erreur inconnue (status ${error.status})`;
+        }
+      } else {
+        this.errorMessage = `Impossible de contacter le serveur (status ${error?.status ?? 'inconnu'})`;
+      }
+
+      console.error('Erreur d\'authentification:', error);
+
+    } finally {
+      // Arrêter le chargement et mettre à jour le template
+      this.isLoading = false;
+      this.cd.detectChanges(); // forcer la mise à jour de l'UI
+    }
   }
 
-  // Gérer la fermeture du popup (après configuration réussie ou annulation)
-  onPasswordSetupDone(success: boolean) {
-    this.showPasswordSetupModal = false;
-    if (success) {
-      // Rediriger vers le vote après le setup
-      this.router.navigate(['/vote']);
-    } else {
-      // En cas d'annulation ou d'échec, déconnecter l'utilisateur (le ramener à l'état initial)
-      this.authService.logout();
+  private getErrorMessageByStatus(status: number): string {
+    switch (status) {
+      case 0:
+        return 'Impossible de contacter le serveur. Vérifiez votre connexion internet.';
+      case 400:
+        return 'Requête invalide. Vérifiez les informations saisies.';
+      case 401:
+        return 'Identifiants incorrects. Veuillez vérifier vos informations.';
+      case 403:
+        return 'Accès refusé.';
+      case 404:
+        return 'Utilisateur non trouvé.';
+      case 500:
+        return 'Erreur serveur. Veuillez réessayer plus tard.';
+      default:
+        return 'Une erreur est survenue. Veuillez réessayer.';
     }
   }
 }

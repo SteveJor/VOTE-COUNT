@@ -1,17 +1,19 @@
 import { Component } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import { CommonModule } from '@angular/common'; 
+import {CommonModule, NgOptimizedImage} from '@angular/common';
 // CHEMIN CORRIGÉ
 import { AuthService } from '../services/auth.service';
 
 @Component({
  selector: 'app-navbar',
  standalone: true,
- imports: [
- RouterLink,
- RouterLinkActive,
- CommonModule
- ],
+  imports: [
+    RouterLink,
+    RouterLinkActive,
+    CommonModule,
+    NgOptimizedImage
+  ],
+
  templateUrl: './navbar.html',
  styleUrl: './navbar.scss',
 })

@@ -6,6 +6,7 @@
     "analytics": "f305ed18-5c95-45a9-a75c-638616c5845c"
   },
   "newProjectRoot": "projects",
+
   "projects": {
     "FRONTEND": {
       "projectType": "application",
@@ -29,6 +30,9 @@
               "src/styles.scss",
               "node_modules/bootstrap/dist/css/bootstrap.min.css",
               "node_modules/@fortawesome/fontawesome-free/css/all.min.css"
+            ],
+            "scripts": [
+              "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
             ]
           },
           "configurations": {
@@ -73,4 +77,6 @@
       }
     }
   }
+
+
 }

@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -38,10 +40,21 @@ public class AdminController {
         authService.register(electeur);
         return ResponseEntity.ok("Electeur enregistre.");
     }
+    @PostMapping("/update-password")
+    public ResponseEntity<?> updatePassword(@RequestParam String numeroCNI, @RequestParam String password) {
+        Electeur electeur = authService.updatePassword(numeroCNI,password);
+        return ResponseEntity.ok(Objects.requireNonNullElse(electeur, "Mot de passe configure."));
+    }
 
     @PostMapping("/register-parti")
     public ResponseEntity<?> registerParti(@RequestBody PartiPolitique parti) {
         partiPolitiqueRepository.save(parti);
         return ResponseEntity.ok("Parti politique enregistre.");
     }
+    @GetMapping("/partis")
+    public ResponseEntity<List<PartiPolitique>> getAllPartis() {
+        List<PartiPolitique> partis = partiPolitiqueRepository.findAll();
+        return ResponseEntity.ok(partis);
+    }
+
 }

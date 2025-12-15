@@ -16,7 +16,7 @@ public class AuthService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public Electeur authenticate(String numeroCNI, String password) {
+    public Electeur acceptVote(String numeroCNI, String password) {
         Optional<Electeur> electeurOpt = electeurRepository.findByNumeroCNI(numeroCNI);
         if (electeurOpt.isPresent()) {
             Electeur electeur = electeurOpt.get();
@@ -27,9 +27,31 @@ public class AuthService {
         return null;
     }
 
+    public Electeur authenticate(String numeroCNI, String name) {
+        Optional<Electeur> electeurOpt = electeurRepository.findByNumeroCNI(numeroCNI);
+        if (electeurOpt.isPresent()) {
+            Electeur electeur = electeurOpt.get();
+            if ((name).equalsIgnoreCase(electeur.getNom())) {
+                return electeur;
+            }
+        }
+        return null;
+    }
+
     public void register(Electeur electeur) {
         electeur.setPassword(passwordEncoder.encode(electeur.getPassword()));
         electeur.setSignature(passwordEncoder.encode(electeur.getSignature())); // Secure signature
         electeurRepository.save(electeur);
+    }
+
+    public Electeur updatePassword(String numeroCNI, String password) {
+        Optional<Electeur> electeurOpt = electeurRepository.findByNumeroCNI(numeroCNI);
+        if (electeurOpt.isPresent()) {
+            Electeur electeur = electeurOpt.get();
+            electeur.setPassword(passwordEncoder.encode(password));
+            electeurRepository.save(electeur);
+            return electeur;
+        }
+return null;
     }
 }
