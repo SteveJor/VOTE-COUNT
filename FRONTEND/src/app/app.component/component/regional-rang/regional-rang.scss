@@ -1,0 +1,124 @@
+$primary-dark: #0c102d;
+$accent-blue: #3f3d99;
+$border-color: #e0e0e0;
+$active-border: $accent-blue;
+$font-stack: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+.regional-title {
+  color: $primary-dark;
+  font-weight: 800;
+  font-size: 1.8rem;
+  letter-spacing: 1px;
+  font-family: $font-stack;
+}
+
+.underline{
+  background-color: #27348b;
+  width: 15rem;
+  height: 4px;
+  margin: 0.5rem auto;
+}
+.vote-image {
+  max-width: 400px;
+  height: auto;
+  margin-bottom: 50px;
+}
+
+
+
+.region-card {
+  background-color: #fff;
+  border-radius: 8px;
+  border: 1px solid $border-color;
+  transition: all 0.3s ease;
+  overflow: hidden;
+
+
+  &:hover {
+    border-color: $active-border;
+    box-shadow: 0 4px 15px rgba($active-border, 0.1);
+  }
+}
+
+.region-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 15px;
+  background-color: #0c102d;
+  border-bottom: 1px solid #0c102d;
+}
+
+.region-name {
+  font-weight: bold;
+  color: #ffffff;
+  font-size: 1.1rem;
+}
+
+.voter-count {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #cfcbcb;
+}
+
+/* --- Liste des Candidats (CANDIDATE-LIST) --- */
+
+.candidate-list {
+  padding: 0 15px;
+}
+
+.candidate-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid $border-color;
+  font-size: 0.95rem;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.candidate-rank-text {
+  flex: 0 0 15%; // Espace pour "1er", "2ème", etc.
+  font-weight: 600;
+  color: $primary-dark;
+  font-size: 18px;
+}
+
+.candidate-party {
+  flex-grow: 1; // Prend l'espace restant
+  font-weight: 500;
+  color: #495057;
+  font-size: 18px;
+  padding-left: 10px;
+}
+
+.candidate-percent {
+  flex: 0 0 15%;
+  font-weight: 700;
+  color: $accent-blue;
+  text-align: right;
+  font-size: 18px;
+}
+
+.btn-link {
+  color: $accent-blue;
+  font-size: 0.9rem;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+/* --- Bouton Voir Plus de Régions --- */
+
+.btn-primary {
+  background-color: $primary-dark;
+  border-color: $primary-dark;
+  font-weight: 600;
+  padding: 10px 30px;
+  border-radius: 8px;
+}

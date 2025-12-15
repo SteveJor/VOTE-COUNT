@@ -1,0 +1,51 @@
+<div class="container-fluid px-5 py-5">
+  <div class="row flex-row justify-content-evenly align-content-center">
+    <div class="col-3">
+      <img src="assets/images/vote.png"
+           alt="Boîte de vote avec un bulletin validé"
+           class="img-fluid vote-image rounded-3" >
+    </div>
+  <div class="col-9 flex-column align-content-center">
+    <h2 class="text-center  regional-title">AFFICHAGE DES VOTES PAR RÉGION (TEMPS RÉEL)</h2>
+    <div class="underline"></div>
+  </div>
+
+  </div>
+
+
+
+  <div class="row g-4 justify-content-center">
+
+    <div class="col-12 col-md-6 col-lg-4" *ngFor="let region of displayedRegions">
+
+      <div class="region-card shadow-sm">
+
+        <div class="region-header">
+          <span class="region-name">{{ region.name }}</span>
+          <span class="voter-count">{{ region.totalVoters | number : '1.0-0' }} VOTANTS</span>
+        </div>
+
+        <div class="candidate-list">
+
+          <div class="candidate-row" *ngFor="let candidate of getCandidatesToShow(region); let i = index">
+            <span class="candidate-rank-text">{{ i + 1 }}{{ i < 3 ? (i === 0 ? 'er' : 'ème') : 'ème' }}</span>
+            <span class="candidate-party">{{ candidate.party }}</span>
+            <span class="candidate-percent">{{ candidate.votesPercent }}%</span>
+          </div>
+
+          <div class="text-center pt-3" *ngIf="hasMoreCandidates(region)">
+            <button class="btn btn-sm btn-link" (click)="showMoreCandidates(region.id)">
+              Voir plus de candidats
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="text-center mt-5" *ngIf="hasMoreRegions">
+    <button class="btn btn-primary btn-lg" (click)="showMoreRegions()">
+      Voir Toutes les Régions <i class="fas fa-map-marked-alt ms-2"></i>
+    </button>
+  </div>
+</div>

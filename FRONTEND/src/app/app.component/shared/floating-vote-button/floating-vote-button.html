@@ -1,0 +1,5 @@
+<button class="btn btn-vote-floating shadow-lg" 
+        *ngIf="authService.isLoggedIn$ | async" 
+        (click)="startVote()">
+  <i class="fas fa-vote-yea me-2"></i> Voter Maintenant
+</button>
