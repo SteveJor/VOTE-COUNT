@@ -56,4 +56,31 @@ public class VoteService {
         electeur.setAVote(true);
         electeurRepository.save(electeur);
     }
+
+    public java.util.List<java.util.Map<String, Object>> getRepartitionParRegion() {
+        java.util.List<Object[]> results = voteRepository.countVotesByRegion();
+        java.util.List<java.util.Map<String, Object>> structuredResults = new java.util.ArrayList<>();
+
+        for (Object[] row : results) {
+            java.util.Map<String, Object> map = new java.util.HashMap<>();
+            map.put("region", row[0]);
+            map.put("parti", row[1]);
+            map.put("voix", row[2]);
+            structuredResults.add(map);
+        }
+        return structuredResults;
+    }
+
+    public java.util.List<java.util.Map<String, Object>> getClassementGeneral() {
+        java.util.List<Object[]> results = voteRepository.countGlobalVotes();
+        java.util.List<java.util.Map<String, Object>> structuredResults = new java.util.ArrayList<>();
+
+        for (Object[] row : results) {
+            java.util.Map<String, Object> map = new java.util.HashMap<>();
+            map.put("parti", row[0]);
+            map.put("voix", row[1]);
+            structuredResults.add(map);
+        }
+        return structuredResults;
+    }
 }

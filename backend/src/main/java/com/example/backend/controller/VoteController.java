@@ -34,4 +34,14 @@ public class VoteController {
     public List<PartiPolitique> getResultats() {
         return partiPolitiqueRepository.findAll();
     }
+
+    @GetMapping("/repartition-region")
+    public ResponseEntity<?> getRepartitionParRegion() {
+        return ResponseEntity.ok(voteService.getRepartitionParRegion());
+    }
+
+    @GetMapping("/classement-general")
+    public ResponseEntity<?> getClassementGeneral() {
+        return ResponseEntity.ok(voteService.getClassementGeneral());
+    }
 }
