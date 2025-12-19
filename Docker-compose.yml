@@ -26,7 +26,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    image: votecount-backend:latest
+#    image: votecount-backend:latest
     container_name: votecount-backend
     ports:
       - "8080:8080"
@@ -75,7 +75,7 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    image: votecount-frontend:latest
+#    image: votecount-frontend:latest
     container_name: votecount-frontend
     ports:
       - "4200:4200"

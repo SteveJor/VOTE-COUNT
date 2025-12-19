@@ -11,6 +11,7 @@
           <div class="underline"></div>
         </div>
       </div>
+
       <!-- Spinner de chargement -->
       <div class="text-center my-5" *ngIf="isLoading">
         <div class="spinner-border text-primary" role="status">
@@ -24,10 +25,10 @@
         </div>
 
         <ng-template #candidateSelection>
-
-
-          <div class="candidates-grid">
-            <div *ngFor="let candidate of allCandidates"
+          <!-- ⭐ Ajout de l'animation et du trackBy -->
+          <div class="candidates-grid"
+               [@gridAnimation]="allCandidates.length">
+            <div *ngFor="let candidate of allCandidates; trackBy: trackByPartiId"
                  class="candidate-card"
                  [ngClass]="'card-' + candidate.color"
                  [class.selected]="selectedId === candidate.id"
@@ -40,7 +41,7 @@
               <div class="card-content">
                 <h3>{{ candidate.president }}</h3>
                 <p class="party">{{ candidate.nomParti }}</p>
-                <p class="description">{{ candidate.slogan  }}</p>
+                <p class="description">{{ candidate.slogan }}</p>
               </div>
 
               <div class="card-actions">
@@ -51,7 +52,6 @@
           </div>
         </ng-template>
       </div>
-
     </div>
   </div>
 
@@ -60,7 +60,7 @@
     <div class="modal-confirm" (click)="$event.stopPropagation()">
       <img src="assets/images/vote.png"
            alt="Boîte de vote avec un bulletin validé"
-           class="img-fluid vote-image1 rounded-3" >
+           class="img-fluid vote-image1 rounded-3">
       <h3>Confirmez votre vote</h3>
       <p>Vous êtes sur le point de voter pour <strong>{{ selectedCandidate?.president }} - {{ selectedCandidate?.nomParti }}</strong>. Cette action est irréversible.</p>
 

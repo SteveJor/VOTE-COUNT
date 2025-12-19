@@ -382,3 +382,26 @@ $card-colors: (
     box-shadow: 0 4px 12px rgba($primary-dark, 0.3);
   }
 }
+
+// 🎨 Animations fluides pour les cartes
+.candidates-grid {
+  position: relative;
+}
+
+.candidate-card {
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform, opacity;
+}
+
+// Animation supplémentaire pour les changements de couleur
+.card-content,
+.card-actions {
+  transition: background-color 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+// Amélioration de l'effet hover
+.candidate-card {
+  &:hover {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}

@@ -10,9 +10,12 @@
       </div>
     </div>
 
-    <!-- Grille des candidats -->
-    <div class="row g-4 candidate-grid justify-content-center" *ngIf="!isLoading">
-      <div class="col-12 col-sm-6 col-lg-4" *ngFor="let candidate of displayedCandidates">
+    <!-- Grille des candidats avec animation -->
+    <div class="row g-4 candidate-grid justify-content-center"
+         *ngIf="!isLoading"
+         [@listAnimation]="displayedCandidates.length">
+      <div class="col-12 col-sm-6 col-lg-4"
+           *ngFor="let candidate of displayedCandidates; trackBy: trackByPartiId">
         <div class="candidate-card shadow-sm" [ngClass]="'card-' + candidate.color">
 
           <div class="candidate-rank">{{ candidate.rank }}</div>
@@ -32,7 +35,6 @@
               </div>
             </div>
           </div>
-
         </div>
       </div>
     </div>

@@ -68,6 +68,14 @@ $card-colors: (
   flex-direction: column;
 }
 
+.candidate-info,
+.candidate-rank {
+  transition: background-color 0.8s ease-in-out;
+}
+
+.progress-fill {
+  transition: width 1s ease-out;
+}
 
 
 .candidate-profile-placeholder {
@@ -179,4 +187,27 @@ $card-colors: (
     background-color: darken($primary-dark, 8%);
     border-color: darken($primary-dark, 8%);
   }
+}
+
+
+// 🎨 Animations fluides pour le réordonnancement
+.candidate-card {
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform, opacity;
+}
+
+.col-12.col-sm-6.col-lg-4 {
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+// Animation pour les changements de couleur
+.candidate-info,
+.candidate-rank {
+  transition: background-color 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+// Animation de la barre de progression
+.progress-fill {
+  transition: width 1s cubic-bezier(0.4, 0, 0.2, 1),
+  background-color 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }

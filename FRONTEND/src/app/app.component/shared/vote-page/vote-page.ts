@@ -9,13 +9,45 @@ import { User } from '../services/model/user';
 import { map, Observable } from 'rxjs';
 import { PartiService } from '../services/parti.service';
 import { interfaceParti } from '../services/model/parti';
+import { trigger, transition, style, animate, query, stagger } from '@angular/animations';
 
 @Component({
   selector: 'app-vote',
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './vote-page.html',
-  styleUrls: ['./vote-page.scss']
+  styleUrls: ['./vote-page.scss'],
+  animations: [
+    trigger('gridAnimation', [
+      transition('* => *', [
+        query(':enter', [
+          style({
+            opacity: 0,
+            transform: 'scale(0.9) translateY(30px)'
+          }),
+          stagger(80, [
+            animate('500ms cubic-bezier(0.35, 0, 0.25, 1)',
+              style({
+                opacity: 1,
+                transform: 'scale(1) translateY(0)'
+              })
+            )
+          ])
+        ], { optional: true }),
+
+        query(':leave', [
+          stagger(50, [
+            animate('400ms cubic-bezier(0.35, 0, 0.25, 1)',
+              style({
+                opacity: 0,
+                transform: 'scale(0.9) translateY(-30px)'
+              })
+            )
+          ])
+        ], { optional: true })
+      ])
+    ])
+  ]
 })
 export class VotePage implements AfterViewInit {
   selectedId: number | null = null;
@@ -26,10 +58,8 @@ export class VotePage implements AfterViewInit {
   errorMessage: string | null = null;
   allCandidates: interfaceParti[] = [];
 
-  // Nouvelle propriété pour le loader
   isLoading: boolean = true;
 
-  // Palette de couleurs
   private colors: string[] = ['red', 'green', 'olive', 'blue', 'black', 'brown', 'purple'];
 
   hasVoted$: Observable<boolean>;
@@ -39,16 +69,14 @@ export class VotePage implements AfterViewInit {
     public voteService: VoteService,
     private authService: AuthService,
     private router: Router,
-    private cd: ChangeDetectorRef // Pour forcer la détection des changements
+    private cd: ChangeDetectorRef
   ) {
     this.hasVoted$ = this.voteService.hasVoted$;
   }
 
   ngAfterViewInit(): void {
-    // Afficher le loader
     this.isLoading = true;
 
-    // zSécurité: Rediriger si l'utilisateur n'est pas connecté
     this.authService.currentUser$.pipe(
       map(user => {
         if (!user) {
@@ -59,7 +87,6 @@ export class VotePage implements AfterViewInit {
       })
     ).subscribe();
 
-    // Charger les candidats avec attribution des couleurs
     this.loadCandidates();
   }
 
@@ -69,14 +96,7 @@ export class VotePage implements AfterViewInit {
 
       this.allCandidates = partis.map((candidate, index) => ({
         ...candidate,
-        color: this.colors[index % this.colors.length]
-      }));
-
-      // Si vous voulez une description (optionnel)
-      // Vous pouvez ajouter une description basée sur le slogan ou autre
-      this.allCandidates = this.allCandidates.map(candidate => ({
-        ...candidate,
-        // Utilisez le slogan comme description, ou créez une description
+        color: this.colors[index % this.colors.length],
         description: candidate.slogan || `Candidat du parti ${candidate.nomParti}`
       }));
 
@@ -85,8 +105,13 @@ export class VotePage implements AfterViewInit {
       this.allCandidates = [];
     } finally {
       this.isLoading = false;
-      this.cd.detectChanges(); // Force la détection des changements
+      this.cd.detectChanges();
     }
+  }
+
+  // ⭐ TrackBy pour optimiser les animations
+  trackByPartiId(index: number, parti: interfaceParti): any {
+    return parti.id ?? parti.nomParti;
   }
 
   selectCandidate(candidate: interfaceParti) {
@@ -115,10 +140,6 @@ export class VotePage implements AfterViewInit {
     this.errorMessage = null;
   }
 
-  // Dans vote-page.component.ts, dans la méthode finalizeVote()
-
-  // Dans vote-page.component.ts, dans la méthode finalizeVote()
-
   finalizeVote() {
     if (!this.selectedCandidate || !this.votePassword) {
       this.errorMessage = 'Veuillez entrer votre mot de passe de vote.';
@@ -132,11 +153,9 @@ export class VotePage implements AfterViewInit {
       return;
     }
 
-    // Vérifier le mot de passe 2FA
     this.authService.verifyTwoFactorPassword(user, this.votePassword).subscribe({
       next: (isValid) => {
         if (isValid) {
-          // Enregistrer le vote
           this.voteService.vote(this.selectedCandidate!.id.toString()).subscribe({
             next: (success) => {
               if (success) {
@@ -164,6 +183,7 @@ export class VotePage implements AfterViewInit {
       }
     });
   }
+
   logout() {
     this.voteService.reset();
     this.router.navigate(['/']);
