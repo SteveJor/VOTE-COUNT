@@ -19,6 +19,6 @@ export class FloatingVoteButton {
     // Logique pour démarrer le processus de vote
     // Nous allons simuler la redirection vers la page de vote
     console.log("Démarrage du processus de vote...");
-    this.router.navigate(['/vote']);
+    this.router.navigate(['/vote-page']);
   }
 }

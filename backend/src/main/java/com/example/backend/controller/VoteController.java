@@ -21,7 +21,7 @@ public class VoteController {
 
     @PostMapping("/voter")
     public ResponseEntity<?> voter(@RequestParam Long electeurId, @RequestParam Long partiId,
-            @RequestParam String signature) {
+                                   @RequestParam String signature) {
         try {
             voteService.voter(electeurId, partiId, signature);
             return ResponseEntity.ok("Vote enregistre avec succes.");
