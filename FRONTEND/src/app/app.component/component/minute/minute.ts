@@ -1,75 +1,70 @@
-import { CommonModule, NgClass } from '@angular/common';
-import { Component, Input, NgModule, OnDestroy, OnInit } from '@angular/core';
-import { interval, Subscription } from 'rxjs';
+import { CommonModule } from '@angular/common';
+import {
+  Component,
+  Input,
+  OnInit,
+  OnDestroy,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef
+} from '@angular/core';
+import { Subscription, timer } from 'rxjs';
 
 @Component({
   selector: 'app-minute',
-  imports: [
-    CommonModule,
-  ],
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './minute.html',
-  styleUrl: './minute.scss',
+  styleUrls: ['./minute.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush // 🔑 clé
 })
-export class Minute implements OnInit, OnDestroy {
+export class MinuteComponent implements OnInit, OnDestroy {
 
-  
-  
-  @Input() endDateString: string = ''; 
-  
-  
-  days: number = 0;
-  hours: number = 0;
-  minutes: number = 0;
-  seconds: number = 0;
-  
-  isElectionLive: boolean = true;
-  private timerSubscription: Subscription | undefined;
+  @Input() endDateString!: string;
+
+  days = 0;
+  hours = 0;
+  minutes = 0;
+  seconds = 0;
+
+  isElectionLive = true;
+
+  private sub?: Subscription;
+
+  constructor(private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
-    if (!this.endDateString) {
-      console.error("endDateString est requis pour le minuteur.");
-      this.isElectionLive = false;
-      return;
-    }
-    
-    
-    this.timerSubscription = interval(1000).subscribe(() => {
-      this.calculateTimeRemaining();
+    this.sub = timer(0, 1000).subscribe(() => {
+      this.updateCountdown();
     });
   }
 
-  calculateTimeRemaining() {
-    const now = new Date().getTime();
-    const endDate = new Date(this.endDateString).getTime();
-    const distance = endDate - now;
+  private updateCountdown(): void {
+    const now = Date.now();
+    const end = new Date(this.endDateString).getTime();
+    const diff = end - now;
 
-    if (distance < 0) {
-      
+    if (diff <= 0) {
       this.days = this.hours = this.minutes = this.seconds = 0;
       this.isElectionLive = false;
-      if (this.timerSubscription) {
-        this.timerSubscription.unsubscribe();
-      }
+      this.sub?.unsubscribe();
+      this.cdr.markForCheck();
       return;
     }
 
-    
-    this.days = Math.floor(distance / (1000 * 60 * 60 * 24));
-    this.hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    this.minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-    this.seconds = Math.floor((distance % (1000 * 60)) / 1000);
+    this.days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    this.hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+    this.minutes = Math.floor((diff / (1000 * 60)) % 60);
+    this.seconds = Math.floor((diff / 1000) % 60);
+
+    // 🔁 rafraîchit UNIQUEMENT ce composant
+    this.cdr.markForCheck();
   }
-  
- 
+
   formatNumber(value: number): string {
-    return value < 10 ? '0' + value : value.toString();
+    return value.toString().padStart(2, '0');
   }
 
   ngOnDestroy(): void {
-   
-    if (this.timerSubscription) {
-      this.timerSubscription.unsubscribe();
-    }
+    this.sub?.unsubscribe();
   }
-
 }

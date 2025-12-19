@@ -2,7 +2,15 @@
 <div class="vote-wrapper">
   <div class="vote-container mt-5">
     <div class="main-content">
-
+      <div class="flex flex-row container-fluid mx-4 justify-content-center align-content-center">
+        <img src="assets/images/vote_page.png"
+             alt="Boîte de vote avec un bulletin validé"
+             class="img-fluid vote-image rounded-3">
+        <div class="flex-column align-content-center">
+          <h2 class="text-center regional-title">Veuillez choisir un candidat pour voter</h2>
+          <div class="underline"></div>
+        </div>
+      </div>
       <!-- Spinner de chargement -->
       <div class="text-center my-5" *ngIf="isLoading">
         <div class="spinner-border text-primary" role="status">
@@ -16,15 +24,7 @@
         </div>
 
         <ng-template #candidateSelection>
-          <div class="flex flex-row container mx-4 justify-content-center align-content-center">
-            <img src="assets/images/vote_page.png"
-                 alt="Boîte de vote avec un bulletin validé"
-                 class="img-fluid vote-image rounded-3">
-            <div class="flex-column align-content-center">
-              <h2 class="text-center regional-title">Veuillez choisir un candidat pour voter</h2>
-              <div class="underline"></div>
-            </div>
-          </div>
+
 
           <div class="candidates-grid">
             <div *ngFor="let candidate of allCandidates"

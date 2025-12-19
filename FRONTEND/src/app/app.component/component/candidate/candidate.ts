@@ -14,7 +14,7 @@ import { interfaceParti } from '../../shared/services/model/parti';
 export class Candidate implements AfterViewInit {
   allCandidates: interfaceParti[] = [];
   displayedCandidates: interfaceParti[] = [];
-  candidatesToShow: number = 6;
+  candidatesToShow: number = 8;
   hasMoreCandidates: boolean = false;
   isLoading: boolean = true;
 

@@ -12,6 +12,9 @@ $main-color: #0c102d;
 //  margin-bottom: 5%;
 //  font-family: 'Montserrat', sans-serif;
 //}
+.timer-value {
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
 
 .flex-row {
   display: flex;
